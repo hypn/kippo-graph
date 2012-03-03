@@ -311,6 +311,7 @@ if($result->num_rows > 0) {
 	//For every row returned from the database we add a new point to the dataset
 	while($row = $result->fetch_array(MYSQLI_BOTH))
 	{
+		$mod = ($mod == 0) ? 1 : $mod;
 		if ($counter % $mod == 0) {
 			$dataSet->addPoint(new Point(date('d-m-Y', strtotime($row['timestamp'])), $row['COUNT(session)']));
 		} else {
