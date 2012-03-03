@@ -1,4 +1,6 @@
-﻿<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+﻿<?php
+$last_updated = (int)file_get_contents('generated-graphs/last_updated.txt');
+?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="EN" lang="EN" dir="ltr">
 <head profile="http://gmpg.org/xfn/11">
 <title>Kippo-Graph | Fast Visualization for your Kippo SSH Honeypot Stats</title>
@@ -45,7 +47,7 @@
           <h2>Top 10 passwords</h2>
           <p>This vertical bar chart diplays the top 10 passwords that attackers try when attacking the system.</p>
         </div>
-        <div class="fl_right"><img src="generated-graphs/top10_passwords.png" alt="" /></div>
+        <div class="fl_right"><img src="generated-graphs/top10_passwords.png<?php echo '?'.$last_updated; ?>" alt="" /></div>
         <div class="clear"></div>
       </div>
       <!-- ############################# -->
@@ -54,7 +56,7 @@
           <h2>Top 10 usernames</h2>
           <p>This vertical bar chart diplays the top 10 usernames that attackers try when attacking the system.</p>
         </div>
-        <div class="fl_right"><img src="generated-graphs/top10_usernames.png" alt="" /></div>
+        <div class="fl_right"><img src="generated-graphs/top10_usernames.png<?php echo '?'.$last_updated; ?>" alt="" /></div>
         <div class="clear"></div>
       </div>
       <!-- ############################# -->
@@ -63,11 +65,11 @@
           <h2>Top 10 user-pass combos</h2>
           <p>This vertical bar chart diplays the top 10 username and password combinations that attackers try when attacking the system.</p>
         </div>
-        <div class="fl_right"><img src="generated-graphs/top10_combinations.png" alt="" /></div>
+        <div class="fl_right"><img src="generated-graphs/top10_combinations.png<?php echo '?'.$last_updated; ?>" alt="" /></div>
 		<div class="fl_left">
           <p>This pie chart diplays the top 10 username and password combinations that attackers try when attacking the system.</p>
         </div>
-		<div class="fl_right"><img src="generated-graphs/top10_combinations_pie.png" alt="" /></div>
+		<div class="fl_right"><img src="generated-graphs/top10_combinations_pie.png<?php echo '?'.$last_updated; ?>" alt="" /></div>
         <div class="clear"></div>
       </div>
       <!-- ############################# -->
@@ -76,7 +78,7 @@
           <h2>Success ratio</h2>
           <p>This vertical bar chart diplays the overall attack success ratio for the particular honeypot system.</p>
         </div>
-        <div class="fl_right"><img src="generated-graphs/success_ratio.png" alt="" /></div>
+        <div class="fl_right"><img src="generated-graphs/success_ratio.png<?php echo '?'.$last_updated; ?>" alt="" /></div>
         <div class="clear"></div>
       </div>
       <!-- ############################# -->
@@ -85,12 +87,12 @@
           <h2>Successes per day/week</h2>
           <p>This vertical bar chart diplays successes per day (Top 20) for the particular honeypot system. The numbers indicate how many times correct credentials were given by attackers.</p>
         </div>
-        <div class="fl_right"><img src="generated-graphs/successes_per_day.png" alt="" /></div>
+        <div class="fl_right"><img src="generated-graphs/successes_per_day.png<?php echo '?'.$last_updated; ?>" alt="" /></div>
 		<div class="clear"></div>
 		<div class="fl_left">
           <p>This line chart diplays the weekly successes on the honeypot system. Curves indicate successful entries over a weekly period.</p>
         </div>
-        <div class="fl_right"><img src="generated-graphs/successes_per_week.png" alt="" /></div>
+        <div class="fl_right"><img src="generated-graphs/successes_per_week.png<?php echo '?'.$last_updated; ?>" alt="" /></div>
         <div class="clear"></div>
 	  </div>
       <!-- ############################# -->
@@ -99,11 +101,11 @@
           <h2>Connections per IP</h2>
           <p>This vertical bar chart diplays the top 10 unique IPs and country codes ordered by the number of overall connections to the system.</p>
         </div>
-        <div class="fl_right"><img src="generated-graphs/connections_per_ip.png" alt="" /></div>
+        <div class="fl_right"><img src="generated-graphs/connections_per_ip.png<?php echo '?'.$last_updated; ?>" alt="" /></div>
         <div class="fl_left">
           <p>This pie chart diplays the top 10 unique IPs and country codes ordered by the number of overall connections to the system.</p>
         </div>
-        <div class="fl_right"><img src="generated-graphs/connections_per_ip_pie.png" alt="" /></div>
+        <div class="fl_right"><img src="generated-graphs/connections_per_ip_pie.png<?php echo '?'.$last_updated; ?>" alt="" /></div>
 		<div class="clear"></div>
       </div>
 	  <!-- ############################# -->
@@ -112,7 +114,7 @@
           <h2>Successful logins from the same IP</h2>
           <p>This vertical bar chart diplays the number of successful logins from the same IP address (Top 20). The numbers indicate how many times the particular source opened a successful session.</p>
         </div>
-        <div class="fl_right"><img src="generated-graphs/logins_from_same_ip.png" alt="" /></div>
+        <div class="fl_right"><img src="generated-graphs/logins_from_same_ip.png<?php echo '?'.$last_updated; ?>" alt="" /></div>
         <div class="clear"></div>
       </div>
       <!-- ############################# -->
@@ -121,11 +123,11 @@
           <h2>Probes per day/week</h2>
           <p>This line chart diplays the daily activity on the honeypot system. Spikes indicate hacking attempts.</p>
         </div>
-        <div class="fl_right"><img src="generated-graphs/probes_per_day.png" alt="" /></div>
+        <div class="fl_right"><img src="generated-graphs/probes_per_day.png<?php echo '?'.$last_updated; ?>" alt="" /></div>
 		<div class="fl_left">
           <p>This line chart diplays the weekly activity on the honeypot system. Curves indicate hacking attempts over a weekly period.</p>
         </div>
-        <div class="fl_right"><img src="generated-graphs/probes_per_week.png" alt="" /></div>
+        <div class="fl_right"><img src="generated-graphs/probes_per_week.png<?php echo '?'.$last_updated; ?>" alt="" /></div>
         <div class="clear"></div>
       </div>
       <!-- ############################# -->
@@ -134,7 +136,7 @@
           <h2>Top 10 SSH clients</h2>
           <p>This vertical bar chart diplays the top 10 SSH clients used by attackers during their hacking attempts.</p>
         </div>
-        <div class="fl_right"><img src="generated-graphs/top10_ssh_clients.png" alt="" /></div>
+        <div class="fl_right"><img src="generated-graphs/top10_ssh_clients.png<?php echo '?'.$last_updated; ?>" alt="" /></div>
         <div class="clear"></div>
       </div>
       <div class="clear"></div>
