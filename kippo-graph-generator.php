@@ -404,7 +404,7 @@ if($result->num_rows > 0) {
 $db_conn->close();
 
 
-//Updated our "last updated" timestamp to prevent graph images from being cached
+//Update the "last updated" timestamp to prevent graph images from being cached
 file_put_contents('generated-graphs/last_updated.txt', time());
 
 //And redirect to the graph presentation page
