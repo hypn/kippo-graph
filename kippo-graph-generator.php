@@ -201,7 +201,7 @@ if($result->num_rows > 0) {
 	$counter = 1;
 	//Display date legend only every $mod rows, 25 distinct values being the optimal for a graph
 	$mod = round($result->num_rows/25);
-	//if($mod == 0) $mod = 1; //otherwise a division by zero might happen below
+	if($mod == 0) $mod = 1; //otherwise a division by zero might happen below
 	//For every row returned from the database we add a new point to the dataset
 	while($row = $result->fetch_array(MYSQLI_BOTH))
 	{
