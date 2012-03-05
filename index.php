@@ -17,7 +17,7 @@
 <!-- ####################################################################################################### -->
 <div class="wrapper">
   <div id="topbar">
-    <div class="fl_left">Version: 0.6.5 | Website: <a href="http://bruteforce.gr/kippo-graph">bruteforce.gr/kippo-graph</a></div>
+    <div class="fl_left">Version: 0.7 | Website: <a href="http://bruteforce.gr/kippo-graph">bruteforce.gr/kippo-graph</a></div>
     <br class="clear" />
   </div>
 </div>
@@ -46,7 +46,7 @@
 	  <p align=center>
 	  <?php 
 	  #Package: Kippo-Graph
-	  #Version: 0.6.5
+	  #Version: 0.7
 	  #Author: ikoniaris
 	  #Website: bruteforce.gr/kippo-graph
 		include_once('config.php');
@@ -64,6 +64,8 @@
 	  ?></p>
 	  <p>&nbsp;</p>
 	  <p><strong>CHANGES:</strong></p>
+	  <p>Version 0.7:<br/>+ Fixed human activity charts: Top 20 and mod limit.<br/>+ Fixed probes per week and successes per week charts.<br/>+ Added human activity per week graph - updated grallery
+		<br/>+ Added most successful logins per day graph - updated gallery.<br/>+ Added most probes per day graph - updated gallery<br/>+ Other small fixes.</p>
 	  <p>Version 0.6.5:<br/>+ Fixed "http://" in file links (Kippo-Input).<br/>+ Added installation instructions and Google Map note in README.txt<br/>+ Fixed successful logins from same IP chart: Top 20.
 		<br/>+ Fixed successes per day chart: Top 20.<br/>+ Fixed probes per day chart: display only 25 distinct date values.</p>
 	  <p>Version 0.6.4:<br/>- Removed dayofyear2date(), has a bug that adds +1 day in all 2012 dates (leap year?).

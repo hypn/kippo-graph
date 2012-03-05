@@ -17,7 +17,7 @@
 <!-- ####################################################################################################### -->
 <div class="wrapper">
   <div id="topbar">
-    <div class="fl_left">Version: 0.6.5 | Website: bruteforce.gr/kippo-graph</div>
+    <div class="fl_left">Version: 0.7 | Website: bruteforce.gr/kippo-graph</div>
     <br class="clear" />
   </div>
 </div>
@@ -44,7 +44,7 @@
 
 <?php
 #Package: Kippo-Graph
-#Version: 0.6.5
+#Version: 0.7
 #Author: ikoniaris
 #Website: bruteforce.gr/kippo-graph
 

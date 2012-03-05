@@ -1,6 +1,6 @@
-<?php
+﻿<?php
 #Package: Kippo-Graph
-#Version: 0.6.5
+#Version: 0.7
 #Author: ikoniaris
 #Website: bruteforce.gr/kippo-graph
 
@@ -148,7 +148,7 @@ if($result->num_rows > 0) {
 }
 
 //-----------------------------------------------------------------------------------------------------------------
-//SUCCESSES PER DAY
+//MOST SUCCESSFUL LOGINS PER DAY
 //-----------------------------------------------------------------------------------------------------------------
 $db_query = 'SELECT COUNT(session), timestamp '
 			."FROM auth "
@@ -175,7 +175,47 @@ if($result->num_rows > 0) {
 	
 	//We set the horizontal chart's dataset and render the graph
 	$chart->setDataSet($dataSet);
-	$chart->setTitle("Successes per day (Top 20)");
+	$chart->setTitle("Most successful logins per day (Top 20)");
+	$chart->getPlot()->setGraphPadding(new Padding(5, 30, 50, 50)); //top, right, bottom, left | defaults: 5, 30, 50, 50
+	$chart->render("generated-graphs/most_successful_logins_per_day.png");
+}
+
+//-----------------------------------------------------------------------------------------------------------------
+//SUCCESSES PER DAY
+//-----------------------------------------------------------------------------------------------------------------
+$db_query = 'SELECT COUNT(session), timestamp '
+			."FROM auth "
+			."WHERE success = 1 "
+			."GROUP BY DAYOFYEAR(timestamp) "
+			."ORDER BY timestamp ASC ";
+			
+$result = $db_conn->query($db_query);
+//echo 'Found '.$result->num_rows.' records';
+
+if($result->num_rows > 0) {
+	//We create a new horizontal bar chart and initialize the dataset
+	$chart = new LineChart(600, 300);
+	$dataSet = new XYDataSet();
+	
+	//This graph gets messed up for large DBs, so here is a simple way to limit some of the input
+	$counter = 1;
+	//Display date legend only every $mod rows, 25 distinct values being the optimal for a graph
+	$mod = round($result->num_rows/25);
+	//if($mod == 0) $mod = 1; //otherwise a division by zero might happen below
+	//For every row returned from the database we add a new point to the dataset
+	while($row = $result->fetch_array(MYSQLI_BOTH))
+	{
+		if ($counter % $mod == 0) {
+			$dataSet->addPoint(new Point(date('d-m-Y', strtotime($row['timestamp'])), $row['COUNT(session)']));
+		} else {
+			$dataSet->addPoint(new Point('', $row['COUNT(session)']));
+		}
+		$counter++;
+	}
+	
+	//We set the horizontal chart's dataset and render the graph
+	$chart->setDataSet($dataSet);
+	$chart->setTitle("Successes per day");
 	$chart->getPlot()->setGraphPadding(new Padding(5, 30, 50, 50)); //top, right, bottom, left | defaults: 5, 30, 50, 50
 	$chart->render("generated-graphs/successes_per_day.png");
 }
@@ -194,7 +234,6 @@ $db_query = 'SELECT COUNT(session), MAKEDATE( '
 			."GROUP BY WEEKOFYEAR(timestamp) "
 			."ORDER BY timestamp ASC";
 
-
 $result = $db_conn->query($db_query);
 //echo 'Found '.$result->num_rows.' records';
 
@@ -203,10 +242,21 @@ if($result->num_rows > 0) {
 	$chart = new LineChart(600, 300);
 	$dataSet = new XYDataSet();
 	
+	//This graph gets messed up for large DBs, so here is a simple way to limit some of the input
+	$counter = 1;
+	//Display date legend only every $mod rows, 25 distinct values being the optimal for a graph
+	$mod = round($result->num_rows/25);
+	if($mod == 0) $mod = 1; //otherwise a division by zero might happen below
 	//For every row returned from the database we add a new point to the dataset
 	while($row = $result->fetch_array(MYSQLI_BOTH))
 	{
-		$dataSet->addPoint(new Point(date('d-m-Y', strtotime($row['DateOfWeek_Value'])), $row['COUNT(session)']));
+		if ($counter % $mod == 0) {
+			$dataSet->addPoint(new Point(date('d-m-Y', strtotime($row['DateOfWeek_Value'])), $row['COUNT(session)']));
+		} else {
+			$dataSet->addPoint(new Point('', $row['COUNT(session)']));
+		}
+		$counter++;
+		
 		//We add 6 "empty" points to make a horizontal line representing a week
 		for($i=0; $i<6; $i++) {
 			$dataSet->addPoint(new Point('', $row['COUNT(session)']));
@@ -289,6 +339,37 @@ if($result->num_rows > 0) {
 }
 
 //-----------------------------------------------------------------------------------------------------------------
+//MOST PROBES PER DAY
+//-----------------------------------------------------------------------------------------------------------------
+$db_query = 'SELECT COUNT(session), timestamp '
+			."FROM auth "
+			."GROUP BY DAYOFYEAR(timestamp) "
+			."ORDER BY COUNT(session) DESC "
+			."LIMIT 20 ";
+			
+$result = $db_conn->query($db_query);
+//echo 'Found '.$result->num_rows.' records';
+
+if($result->num_rows > 0) {
+	//We create a new horizontal bar chart and initialize the dataset
+	$chart = new HorizontalBarChart(600, 300);
+	$dataSet = new XYDataSet();
+	
+	//For every row returned from the database we add a new point to the dataset
+	while($row = $result->fetch_array(MYSQLI_BOTH))
+	{
+		$dataSet->addPoint(new Point(date('d-m-Y', strtotime($row['timestamp'])), $row['COUNT(session)']));
+		//$dataSet->addPoint(new Point(date('l, d-m-Y', strtotime($row['timestamp'])), $row['COUNT(session)']));
+	}
+	
+	//We set the horizontal chart's dataset and render the graph
+	$chart->setDataSet($dataSet);
+	$chart->setTitle("Most probes per day (Top 20)");
+	$chart->getPlot()->setGraphPadding(new Padding(5, 30, 50, 75 /*140*/)); //top, right, bottom, left | defaults: 5, 30, 50, 50
+	$chart->render("generated-graphs/most_probes_per_day.png");
+}
+
+//-----------------------------------------------------------------------------------------------------------------
 //PROBES PER DAY
 //-----------------------------------------------------------------------------------------------------------------
 $db_query = 'SELECT COUNT(session), timestamp '
@@ -308,10 +389,10 @@ if($result->num_rows > 0) {
 	$counter = 1;
 	//Display date legend only every $mod rows, 25 distinct values being the optimal for a graph
 	$mod = round($result->num_rows/25);
+	if($mod == 0) $mod = 1; //otherwise a division by zero might happen below
 	//For every row returned from the database we add a new point to the dataset
 	while($row = $result->fetch_array(MYSQLI_BOTH))
 	{
-		$mod = ($mod == 0) ? 1 : $mod;
 		if ($counter % $mod == 0) {
 			$dataSet->addPoint(new Point(date('d-m-Y', strtotime($row['timestamp'])), $row['COUNT(session)']));
 		} else {
@@ -348,10 +429,21 @@ if($result->num_rows > 0) {
 	$chart = new LineChart(600, 300);
 	$dataSet = new XYDataSet();
 	
+	//This graph gets messed up for large DBs, so here is a simple way to limit some of the input
+	$counter = 1;
+	//Display date legend only every $mod rows, 25 distinct values being the optimal for a graph
+	$mod = round($result->num_rows/25);
+	if($mod == 0) $mod = 1; //otherwise a division by zero might happen below
 	//For every row returned from the database we add a new point to the dataset
 	while($row = $result->fetch_array(MYSQLI_BOTH))
 	{
-		$dataSet->addPoint(new Point(date('d-m-Y', strtotime($row['DateOfWeek_Value'])), $row['COUNT(session)']));
+		if ($counter % $mod == 0) {
+			$dataSet->addPoint(new Point(date('d-m-Y', strtotime($row['DateOfWeek_Value'])), $row['COUNT(session)']));
+		} else {
+			$dataSet->addPoint(new Point('', $row['COUNT(session)']));
+		}
+		$counter++;
+		
 		//We add 6 "empty" points to make a horizontal line representing a week
 		for($i=0; $i<6; $i++) {
 			$dataSet->addPoint(new Point('', $row['COUNT(session)']));
@@ -402,10 +494,6 @@ if($result->num_rows > 0) {
 
 //We close the connection
 $db_conn->close();
-
-
-//Update the "last updated" timestamp to prevent graph images from being cached
-file_put_contents('generated-graphs/last_updated.txt', time());
 
 //And redirect to the graph presentation page
 header('location:kippo-graph.php');

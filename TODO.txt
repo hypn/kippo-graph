@@ -1,5 +1,5 @@
 ﻿Package: Kippo-Graph
-Version: 0.6.5
+Version: 0.7
 Author: ikoniaris
 Website: bruteforce.gr/kippo-graph
 
@@ -18,6 +18,7 @@ TODO for new versions:
 
 
 DONE:
++ Human activity per week, Successes per day (line), Probing busiest days (Top 20), naming conventions/changes, update gallery.
 + URGENT: Fix "Successful logins from same IP", "Probes per day", "Successes per day", when the DB is very big. See: http://t.co/TltEfH89
 + Successes per week graph, so gallery will look complete :P
 + Add timestamp to command tables --OK--

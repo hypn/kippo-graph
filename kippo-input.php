@@ -17,7 +17,7 @@
 <!-- ####################################################################################################### -->
 <div class="wrapper">
   <div id="topbar">
-    <div class="fl_left">Version: 0.6.5 | Website: bruteforce.gr/kippo-graph</div>
+    <div class="fl_left">Version: 0.7 | Website: bruteforce.gr/kippo-graph</div>
     <br class="clear" />
   </div>
 </div>
@@ -43,7 +43,7 @@
 	  <hr />
 <?php
 #Package: Kippo-Graph
-#Version: 0.6.5
+#Version: 0.7
 #Author: ikoniaris
 #Website: bruteforce.gr/kippo-graph
 
@@ -59,6 +59,40 @@ if(mysqli_connect_errno()) {
 }
 
 //-----------------------------------------------------------------------------------------------------------------
+//HUMAN ACTIVITY BUSIEST DAYS 
+//-----------------------------------------------------------------------------------------------------------------
+$db_query = 'SELECT COUNT(input), timestamp '
+			."FROM input "
+			."GROUP BY DAYOFYEAR(timestamp) "
+			//."ORDER BY timestamp ASC ";
+			."ORDER BY COUNT(input) DESC "
+			."LIMIT 20 ";
+
+$result = $db_conn->query($db_query);
+//echo 'Found '.$result->num_rows.' records';
+
+if($result->num_rows > 0) {
+	//We create a new vertical bar chart and initialize the dataset
+	$chart_vertical = new VerticalBarChart(600, 300);
+	$dataSet = new XYDataSet();
+	
+	//For every row returned from the database we add a new point to the dataset
+	while($row = $result->fetch_array(MYSQLI_BOTH))
+	{
+		$dataSet->addPoint(new Point(date('d-m-Y', strtotime($row['timestamp'])), $row['COUNT(input)']));
+	}
+
+	//We set the vertical bar chart's dataset and render the graph
+	$chart_vertical->setDataSet($dataSet);
+	$chart_vertical->setTitle("Human activity busiest days (Top 20)");
+	$chart_vertical->render("generated-graphs/human_activity_busiest_days.png");
+	echo '<h3>Human activity inside the honeypot</h3>';
+	echo '<p>The following vertical bar chart visualizes the top 20 busiest days of real human activity, by counting the number of input to the system.</p>';
+	echo '<img src="generated-graphs/human_activity_busiest_days.png">';
+	echo '<br />';
+}
+
+//-----------------------------------------------------------------------------------------------------------------
 //HUMAN ACTIVITY PER DAY
 //-----------------------------------------------------------------------------------------------------------------
 $db_query = 'SELECT COUNT(input), timestamp '
@@ -70,33 +104,88 @@ $result = $db_conn->query($db_query);
 //echo 'Found '.$result->num_rows.' records';
 
 if($result->num_rows > 0) {
-	//We create a new vertical bar chart and initialize the dataset
-	$chart_vertical = new VerticalBarChart(600, 300);
 	//We create a new line chart and initialize the dataset
 	$chart = new LineChart(600, 300);
 	$dataSet = new XYDataSet();
 	
+	//This graph gets messed up for large DBs, so here is a simple way to limit some of the input
+	$counter = 1;
+	//Display date legend only every $mod rows, 25 distinct values being the optimal for a graph
+	$mod = round($result->num_rows/25);
+	if($mod == 0) $mod = 1; //otherwise a division by zero might happen below
 	//For every row returned from the database we add a new point to the dataset
 	while($row = $result->fetch_array(MYSQLI_BOTH))
 	{
-		$dataSet->addPoint(new Point(date('d-m-Y', strtotime($row['timestamp'])), $row['COUNT(input)']));
+		if ($counter % $mod == 0) {
+			$dataSet->addPoint(new Point(date('d-m-Y', strtotime($row['timestamp'])), $row['COUNT(input)']));
+		} else {
+			$dataSet->addPoint(new Point('', $row['COUNT(input)']));
+		}
+		$counter++;
 	}
 
 	//We set the line chart's dataset and render the graph
-	$chart_vertical->setDataSet($dataSet);
-	$chart_vertical->setTitle("Human activity per day");
-	$chart_vertical->render("generated-graphs/human_activity_per_day.png");
-	echo '<h3>Human activity per day</h3>';
-	echo '<p>The following vertical bar chart visualizes real human activity per day, by counting the number of input to the system for each day of operation.</p>';
-	echo '<img src="generated-graphs/human_activity_per_day.png">';
-	echo '<br />';
 	$chart->setDataSet($dataSet);
 	$chart->setTitle("Human activity per day");
-	$chart->render("generated-graphs/human_activity_per_day_line.png");
-	echo '<p>The following line chart visualizes real human activity per day, by counting the number of input to the system for each day of operation.</p>';
-	echo '<img src="generated-graphs/human_activity_per_day_line.png">';
+	$chart->render("generated-graphs/human_activity_per_day.png");
+	echo '<p>The following line chart visualizes real human activity per day, by counting the number of input to the system for each day of operation. 
+			<br/><strong>Warning:</strong> Dates with zero input are not displayed.</p>';
+	echo '<img src="generated-graphs/human_activity_per_day.png">';
+	echo '<br />';
+}
+
+//-----------------------------------------------------------------------------------------------------------------
+//HUMAN ACTIVITY PER WEEK
+//-----------------------------------------------------------------------------------------------------------------
+$db_query = 'SELECT COUNT(input), MAKEDATE( '
+			."CASE " 
+				."WHEN WEEKOFYEAR(timestamp) = 52 "
+                ."THEN YEAR(timestamp)-1 "
+				."ELSE YEAR(timestamp) "
+			."END, (WEEKOFYEAR(timestamp) * 7)-4) AS DateOfWeek_Value "
+			."FROM input "
+			."GROUP BY WEEKOFYEAR(timestamp) "
+			."ORDER BY timestamp ASC";
+
+
+$result = $db_conn->query($db_query);
+//echo 'Found '.$result->num_rows.' records';
+
+if($result->num_rows > 0) {
+	//We create a new line chart and initialize the dataset
+	$chart = new LineChart(600, 300);
+	$dataSet = new XYDataSet();
+	
+	//This graph gets messed up for large DBs, so here is a simple way to limit some of the input
+	$counter = 1;
+	//Display date legend only every $mod rows, 25 distinct values being the optimal for a graph
+	$mod = round($result->num_rows/25);
+	if($mod == 0) $mod = 1; //otherwise a division by zero might happen below
+	//For every row returned from the database we add a new point to the dataset
+	while($row = $result->fetch_array(MYSQLI_BOTH))
+	{
+		if ($counter % $mod == 0) {
+			$dataSet->addPoint(new Point(date('d-m-Y', strtotime($row['DateOfWeek_Value'])), $row['COUNT(input)']));
+		} else {
+			$dataSet->addPoint(new Point('', $row['COUNT(input)']));
+		}
+		$counter++;
+		
+		//We add 6 "empty" points to make a horizontal line representing a week
+		for($i=0; $i<6; $i++) {
+			$dataSet->addPoint(new Point('', $row['COUNT(input)']));
+		}
+	}
+
+	//We set the line chart's dataset and render the graph
+	$chart->setDataSet($dataSet);
+	$chart->setTitle("Human activity per week");
+	$chart->render("generated-graphs/human_activity_per_week.png");
+	echo '<p>The following line chart visualizes real human activity per week, by counting the number of input to the system for each day of operation.</p>';
+	echo '<img src="generated-graphs/human_activity_per_week.png">';
 	echo '<br /><hr /><br />';
 }
+
 
 //-----------------------------------------------------------------------------------------------------------------
 //TOP 10 OVERALL INPUT
@@ -151,7 +240,8 @@ if($result->num_rows > 0) {
 	$chart->render("generated-graphs/top10_overall_input.png");
 	echo '<p>This vertical bar chart visualizes the top 10 commands (overall) entered by attackers in the honeypot system.</p>';
 	echo '<img src="generated-graphs/top10_overall_input.png">';
-	echo '<hr /><br />';}
+	echo '<hr /><br />';
+}
 
 //-----------------------------------------------------------------------------------------------------------------
 //TOP 10 SUCCESSFUL INPUT
@@ -368,7 +458,7 @@ $result = $db_conn->query($db_query);
 if($result->num_rows > 0) {
 	//We create a skeleton for the table
 	$counter = 1;
-	echo '<h3>executed scripts</h3>';
+	echo '<h3>Executed scripts</h3>';
 	echo '<p>The following table diplays the latest executed scripts by attackers in the honeypot system.</p>';
 	echo '<table><thead>';
 	echo '<tr class="dark">';
@@ -411,7 +501,7 @@ $result = $db_conn->query($db_query);
 if($result->num_rows > 0) {
 	//We create a skeleton for the table
 	$counter = 1;
-	echo '<h3>interesting commands</h3>';
+	echo '<h3>Interesting commands</h3>';
 	echo '<p>The following table diplays other interesting commands executed by attackers in the honeypot system.</p>';
 	echo '<table><thead>';
 	echo '<tr class="dark">';
